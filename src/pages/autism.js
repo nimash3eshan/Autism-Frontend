@@ -12,6 +12,7 @@ import {
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import MicIcon from "@mui/icons-material/Mic";
 import { useRef, useState } from "react";
+import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 
 const Page = () => {
   const fileInputRef = useRef(null);
@@ -51,7 +52,7 @@ const Page = () => {
   return (
     <>
       <Head>
-        <title>Autism</title>
+        <title>Autism Prediction</title>
       </Head>
       <Box
         component="main"
@@ -60,14 +61,31 @@ const Page = () => {
           py: 8,
         }}
       >
-        <Container maxWidth="lg">
+        <Container maxWidth="xl">
           <Stack spacing={3}>
-            <div>
-              <Typography variant="h4">Autism Detection</Typography>
-            </div>
-            <div>
-              <Grid container spacing={3}></Grid>
-            </div>
+            <Stack direction="row" justifyContent="space-between" spacing={4}>
+              <Stack spacing={1}>
+                <Typography variant="h4">Autism Prediction</Typography>
+                <Stack alignItems="center" direction="row" spacing={1}></Stack>
+              </Stack>
+              <Box sx={{ display: "inline-block", ml: 1 }}>
+                <label htmlFor="raised-button-file">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={
+                      <SvgIcon fontSize="small">
+                        <PlusIcon />
+                      </SvgIcon>
+                    }
+                    component="span"
+                  >
+                    Add
+                  </Button>
+                </label>
+              </Box>
+            </Stack>
+
             <Box
               sx={{
                 display: "flex",

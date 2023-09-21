@@ -13,6 +13,7 @@ const Page = () => {
   const [audioURL, setAudioURL] = useState(null);
 
   const handleFileUpload = async () => {
+    console.log("handleFileUpload triggered");
     const file = fileInputRef.current.files[0];
     if (file) {
       setProcessing(true);
@@ -61,18 +62,22 @@ const Page = () => {
                 <Typography variant="h4">Voice Seperation</Typography>
                 <Stack alignItems="center" direction="row" spacing={1}></Stack>
               </Stack>
-              <div>
-                <Button
-                  startIcon={
-                    <SvgIcon fontSize="small">
-                      <PlusIcon />
-                    </SvgIcon>
-                  }
-                  variant="contained"
-                >
-                  Add
-                </Button>
-              </div>
+              <Box sx={{ display: "inline-block", ml: 1 }}>
+                <label htmlFor="raised-button-file">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={
+                      <SvgIcon fontSize="small">
+                        <PlusIcon />
+                      </SvgIcon>
+                    }
+                    component="span"
+                  >
+                    Add
+                  </Button>
+                </label>
+              </Box>
             </Stack>
 
             <Box

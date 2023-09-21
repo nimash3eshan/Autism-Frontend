@@ -58,18 +58,22 @@ const Page = () => {
               <Stack spacing={1}>
                 <Typography variant="h4">Age Prediction</Typography>
               </Stack>
-              <div>
-                <Button
-                  startIcon={
-                    <SvgIcon fontSize="small">
-                      <PlusIcon />
-                    </SvgIcon>
-                  }
-                  variant="contained"
-                >
-                  Add
-                </Button>
-              </div>
+              <Box sx={{ display: "inline-block", ml: 1 }}>
+                <label htmlFor="raised-button-file">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={
+                      <SvgIcon fontSize="small">
+                        <PlusIcon />
+                      </SvgIcon>
+                    }
+                    component="span"
+                  >
+                    Add
+                  </Button>
+                </label>
+              </Box>
             </Stack>
             <Box
               sx={{
