@@ -132,6 +132,9 @@ const Page = () => {
               {processing && <div>Processing...</div>}
               {audioURL && (
                 <div>
+                  <Typography style={{ marginBottom: 20 }} variant="h6">
+                    Seperated Voice
+                  </Typography>
                   <audio controls>
                     <source src={audioURL} type="audio/wav" />
                     Your browser does not support the audio element.

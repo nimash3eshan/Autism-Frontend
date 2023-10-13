@@ -17,7 +17,8 @@ import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 const Page = () => {
   const fileInputRef = useRef(null);
   const [processing, setProcessing] = useState(false);
-  const [audioURL, setAudioURL] = useState(null);
+
+  const [autismResult, setAutismResult] = useState(null);
 
   const handleFileUpload = async () => {
     const file = fileInputRef.current.files[0];
@@ -27,19 +28,18 @@ const Page = () => {
       formData.append("file", file);
 
       try {
-        const response = await fetch("http://127.0.0.1:5000/process-voice", {
+        const response = await fetch("http://127.0.0.1:5000/detect-anomaly", {
           method: "POST",
           body: formData,
         });
 
         if (response.ok) {
-          const blob = await response.blob();
-          const objectURL = URL.createObjectURL(blob);
-          setAudioURL(objectURL);
+          const data = await response.json();
+          setAutismResult(data.anomaly_classification);
         } else {
           const errorText = await response.text();
-          console.error("Failed to process audio:", errorText);
-          alert("Error processing audio: " + errorText);
+          console.error("Failed to detect anomaly:", errorText);
+          alert("Error detecting anomaly: " + errorText);
         }
       } catch (error) {
         console.error("Error uploading the file:", error);
@@ -136,13 +136,8 @@ const Page = () => {
               }}
             >
               {processing && <div>Processing...</div>}
-              {audioURL && (
-                <div>
-                  <audio controls>
-                    <source src={audioURL} type="audio/wav" />
-                    Your browser does not support the audio element.
-                  </audio>
-                </div>
+              {autismResult && (
+                <Typography variant="h6">Anomaly Classification: {autismResult}</Typography>
               )}
             </Box>
           </Stack>

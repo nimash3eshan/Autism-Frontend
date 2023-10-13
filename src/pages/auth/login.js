@@ -54,7 +54,7 @@ const Page = () => {
   return (
     <>
       <Head>
-        <title>Login | Devias Kit</title>
+        <title>Login | Autism Detector</title>
       </Head>
       <Box
         sx={{
