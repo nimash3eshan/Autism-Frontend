@@ -8,10 +8,16 @@ import {
   Typography,
   Grid,
   IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
 } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import MicIcon from "@mui/icons-material/Mic";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 
 const Page = () => {
@@ -19,9 +25,35 @@ const Page = () => {
   const [processing, setProcessing] = useState(false);
 
   const [autismResult, setAutismResult] = useState(null);
+  const [fileName, setFileName] = useState(null);
+
+  // Load table data from localStorage on component mount
+  const [tableData2, setTableData2] = useState(
+    JSON.parse(localStorage.getItem("tableData2")) || []
+  );
+
+  // Update tableData in localStorage when new predictions are available
+  useEffect(() => {
+    if (autismResult !== null) {
+      const newData = {
+        fileName,
+        autismResult,
+      };
+      setTableData2((prevData) => {
+        const updatedData = [...prevData, newData];
+        localStorage.setItem("tableData2", JSON.stringify(updatedData));
+        return updatedData;
+      });
+    }
+  }, [autismResult, fileName]);
 
   const handleFileUpload = async () => {
     const file = fileInputRef.current.files[0];
+
+    // Extract the file name without extension
+    const fileName = file.name.replace(/\.[^/.]+$/, "");
+    setFileName(fileName);
+
     if (file) {
       setProcessing(true);
       const formData = new FormData();
@@ -36,8 +68,10 @@ const Page = () => {
         if (response.ok) {
           const data = await response.json();
           setAutismResult(data.anomaly_classification);
+          fileInputRef.current.value = "";
         } else {
           const errorText = await response.text();
+          fileInputRef.current.value = "";
           console.error("Failed to detect anomaly:", errorText);
           alert("Error detecting anomaly: " + errorText);
         }
@@ -136,8 +170,25 @@ const Page = () => {
               }}
             >
               {processing && <div>Processing...</div>}
-              {autismResult && (
-                <Typography variant="h6">Anomaly Classification: {autismResult}</Typography>
+              {tableData2 !== null && (
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Voice Name</TableCell>
+                        <TableCell>Anomaly Classification</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {tableData2.map((row, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{row.fileName}</TableCell>
+                          <TableCell>{row.autismResult}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
               )}
             </Box>
           </Stack>

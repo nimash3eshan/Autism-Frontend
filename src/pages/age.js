@@ -16,7 +16,7 @@ import {
   TextField,
 } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MicIcon from "@mui/icons-material/Mic";
 
 const Page = () => {
@@ -25,9 +25,35 @@ const Page = () => {
   const [realAge, setRealAge] = useState(null);
   const [isRealAgeGreaterThanPredicted, setIsRealAgeGreaterThanPredicted] = useState(null);
   const [predictedAge, setPredictedAge] = useState(null);
+  const [fileName, setFileName] = useState(null);
+
+  // Load table data from localStorage on component mount
+  const [tableData, setTableData] = useState(JSON.parse(localStorage.getItem("tableData")) || []);
+
+  // Update tableData in localStorage when new predictions are available
+  useEffect(() => {
+    if (predictedAge && isRealAgeGreaterThanPredicted !== null) {
+      const newData = {
+        fileName,
+        realAge,
+        predictedAge,
+        isRealAgeGreaterThanPredicted,
+      };
+      setTableData((prevData) => {
+        const updatedData = [...prevData, newData];
+        localStorage.setItem("tableData", JSON.stringify(updatedData));
+        return updatedData;
+      });
+    }
+  }, [predictedAge, isRealAgeGreaterThanPredicted]);
 
   const handleFileUpload = async () => {
     const file = fileInputRef.current.files[0];
+    console.log("Selected file:", file);
+
+    // Extract the file name without extension
+    const fileName = file.name.replace(/\.[^/.]+$/, "");
+    setFileName(fileName);
 
     if (!realAge) {
       alert("Please enter the baby's real age.");
@@ -49,8 +75,10 @@ const Page = () => {
           const data = await response.json();
           setPredictedAge(data.predicted_age);
           setIsRealAgeGreaterThanPredicted(realAge > data.predicted_age ? "Yes" : "No");
+          fileInputRef.current.value = "";
         } else {
           const errorText = await response.text();
+          fileInputRef.current.value = "";
           console.error("Failed to predict age:", errorText);
           alert("Error predicting age: " + errorText);
         }
@@ -144,22 +172,26 @@ const Page = () => {
               }}
             >
               {processing && <div>Processing...</div>}
-              {predictedAge && isRealAgeGreaterThanPredicted !== null && (
+              {tableData !== null && (
                 <TableContainer>
                   <Table>
                     <TableHead>
                       <TableRow>
+                        <TableCell>Voice Name</TableCell>
                         <TableCell>Real Age</TableCell>
                         <TableCell>Predicted Age</TableCell>
                         <TableCell>Is Real Age &gt; Predicted Age</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      <TableRow>
-                        <TableCell>{realAge}</TableCell>
-                        <TableCell>{predictedAge}</TableCell>
-                        <TableCell>{isRealAgeGreaterThanPredicted}</TableCell>
-                      </TableRow>
+                      {tableData.map((row, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{row.fileName}</TableCell>
+                          <TableCell>{row.realAge}</TableCell>
+                          <TableCell>{row.predictedAge}</TableCell>
+                          <TableCell>{row.isRealAgeGreaterThanPredicted}</TableCell>
+                        </TableRow>
+                      ))}
                     </TableBody>
                   </Table>
                 </TableContainer>
